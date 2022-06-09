@@ -1,0 +1,19 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/lifebot?createDatabaseIfNotExist=true&useUnicode=yes&characterEncoding=UTF-8
+    username: root
+    password: password
+    hikari:
+      max-lifetime: 580000
+
+discord-enabled: true
+
+tokens:
+  file: ${TOKEN_LOCATION:tokens.properties}
+web3j:
+  client-address: https://arb1.arbitrum.io/rpc
