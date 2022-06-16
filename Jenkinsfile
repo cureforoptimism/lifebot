@@ -1,12 +1,12 @@
 pipeline {
    agent any
    environment {
-       registry = "labmain:32000/donkeybot"
+       registry = "labmain:32000/lifebot"
    }
    stages {
        stage('Build Dockerfile and Publish') {
            environment {
-               TOKENS = credentials('	donkey_tokens.properties')
+               TOKENS = credentials('lifebot_tokens.properties')
            }
            steps{
                script {
@@ -24,7 +24,7 @@ pipeline {
       stage ('Deploy') {
            steps {
                script{
-                   def image_id = "localhost:32000/donkeybot" + ":$BUILD_NUMBER"
+                   def image_id = "localhost:32000/lifebot" + ":$BUILD_NUMBER"
                    sh "ansible-playbook  playbook.yml --extra-vars \"image=${image_id}\""
                }
            }
