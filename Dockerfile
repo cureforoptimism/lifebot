@@ -8,11 +8,11 @@ COPY . .
 RUN ./gradlew bootJar
 
 FROM amazoncorretto:17
-ENV ARTIFACT_NAME=discordbase-1.0-SNAPSHOT.jar
+ENV ARTIFACT_NAME=lifebot-1.0-SNAPSHOT.jar
 ENV APP_HOME=/discordbase
 WORKDIR $APP_HOME
 COPY --from=temp_build_image $APP_HOME/build/libs/$ARTIFACT_NAME $APP_HOME/build/libs/$ARTIFACT_NAME
 ENV TZ="America/Denver"
 ENV PROD="true"
 
-CMD java -jar /discordbase/build/libs/discordbase-1.0-SNAPSHOT.jar
+CMD java -jar /discordbase/build/libs/$ARTIFACT_NAME
