@@ -77,8 +77,7 @@ public class DiscordBot implements ApplicationRunner {
         .subscribe(
             event -> {
               try {
-                String posNeg = currentChange >= 0.0 ? "\uD83C\uDF4C" : "\uD83C\uDF46";
-                String nickName = ("MAGIC $" + currentPrice + " " + posNeg);
+                String nickName = ("MAGIC $" + currentPrice);
                 String presence = String.format("24h: %.2f%%", currentChange);
                 client
                     .getGuilds()
