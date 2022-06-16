@@ -9,6 +9,8 @@ import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.entity.channel.MessageChannel;
+import discord4j.core.object.presence.ClientActivity;
+import discord4j.core.object.presence.ClientPresence;
 import discord4j.core.spec.MessageCreateSpec;
 import discord4j.discordjson.json.ApplicationCommandData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
@@ -69,6 +71,36 @@ public class DiscordBot implements ApplicationRunner {
         .getEventDispatcher()
         .on(ChatInputInteractionEvent.class)
         .subscribe(commandListener::handle);
+
+    client
+        .on(RefreshEvent.class)
+        .subscribe(
+            event -> {
+              try {
+                String posNeg = currentChange >= 0.0 ? "\uD83C\uDF4C" : "\uD83C\uDF46";
+                String nickName = ("MAGIC $" + currentPrice + " " + posNeg);
+                String presence = String.format("24h: %.2f%%", currentChange);
+                client
+                    .getGuilds()
+                    .toStream()
+                    .forEach(
+                        g -> {
+                          try {
+                            g.changeSelfNickname(nickName).block();
+                          } catch (Exception ex) {
+                            log.warn(
+                                "Unable to change nickname for server: "
+                                    + g.getId()
+                                    + "; will try again");
+                          }
+                        });
+                client
+                    .updatePresence(ClientPresence.online(ClientActivity.watching(presence)))
+                    .block();
+              } catch (Exception ex) {
+                log.warn("Unable to change nickname: " + ex);
+              }
+            });
 
     manageSlashCommands(client);
 
