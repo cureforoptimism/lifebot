@@ -1,5 +1,7 @@
 package com.cureforoptimism.lifebot;
 
+import com.litesoftwares.coingecko.CoinGeckoApiClient;
+import com.litesoftwares.coingecko.impl.CoinGeckoApiClientImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +17,11 @@ import org.web3j.protocol.http.HttpService;
 @EnableTransactionManagement
 @RequiredArgsConstructor
 public class SpringConfiguration {
+  @Bean
+  public CoinGeckoApiClient coinGeckoApiClient() {
+    return new CoinGeckoApiClientImpl();
+  }
+
   @Bean
   public Web3j web3j() {
     return Web3j.build(new HttpService("https://arb1.arbitrum.io/rpc"));

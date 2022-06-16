@@ -1,5 +1,6 @@
 package com.cureforoptimism.lifebot.application;
 
+import com.cureforoptimism.lifebot.discord.event.RefreshEvent;
 import com.cureforoptimism.lifebot.discord.listener.DiscordCommandListener;
 import com.cureforoptimism.lifebot.service.TokenService;
 import discord4j.common.JacksonResources;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -30,6 +32,17 @@ public class DiscordBot implements ApplicationRunner {
   final ApplicationContext context;
   static GatewayDiscordClient client;
   final TokenService tokenService;
+
+  // TODO: This sucks. Makes this suck less with a rational pattern.
+  @Getter Double currentPrice;
+  @Getter Double currentChange;
+  @Getter Double currentChange12h;
+  @Getter Double currentChange4h;
+  @Getter Double currentChange1h;
+  @Getter Double currentVolume24h;
+  @Getter Double currentVolume12h;
+  @Getter Double currentVolume4h;
+  @Getter Double currentVolume1h;
 
   public DiscordBot(ApplicationContext context, TokenService tokenService) {
     this.context = context;
@@ -155,5 +168,28 @@ public class DiscordBot implements ApplicationRunner {
         log.warn("Unable to post to channel: " + discordChannelId, ex);
       }
     }
+  }
+
+  public void refreshMagicPrice(
+      Double price,
+      Double usd24HChange,
+      Double change12h,
+      Double change4h,
+      Double change1h,
+      Double volume24h,
+      Double volume12h,
+      Double volume4h,
+      Double volume1h) {
+    currentPrice = price;
+    currentChange = usd24HChange;
+    currentChange12h = change12h;
+    currentChange4h = change4h;
+    currentChange1h = change1h;
+    currentVolume24h = volume24h;
+    currentVolume12h = volume12h;
+    currentVolume4h = volume4h;
+    currentVolume1h = volume1h;
+
+    client.getEventDispatcher().publish(new RefreshEvent(null, null));
   }
 }

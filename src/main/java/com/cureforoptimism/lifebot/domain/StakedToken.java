@@ -25,9 +25,7 @@ public class StakedToken {
   @Setter
   private Set<Token> tokens = new LinkedHashSet<>();
 
-  @Getter
-  @Setter
-  private Integer quantity;
+  @Getter @Setter private Integer quantity;
 
   @ManyToOne
   @Getter
