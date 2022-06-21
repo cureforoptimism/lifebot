@@ -6,7 +6,7 @@ import static com.inamik.text.tables.Cell.Functions.RIGHT_ALIGN;
 import com.cureforoptimism.lifebot.Utilities;
 import com.cureforoptimism.lifebot.application.DiscordBot;
 import com.cureforoptimism.lifebot.domain.SeedType;
-import com.cureforoptimism.lifebot.service.CoinGeckoService;
+import com.cureforoptimism.lifebot.service.MarketPriceMessageSubscriber;
 import com.cureforoptimism.lifebot.service.SubgraphService;
 import com.inamik.text.tables.SimpleTable;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
@@ -16,7 +16,6 @@ import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.InteractionFollowupCreateSpec;
 import discord4j.core.spec.MessageCreateSpec;
 import java.math.BigDecimal;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -28,7 +27,8 @@ import reactor.core.publisher.Mono;
 public class FloorCommand implements DiscordCommand {
   private final DiscordBot discordBot;
   private final SubgraphService subgraphService;
-  private final CoinGeckoService coinGeckoService;
+
+  private final MarketPriceMessageSubscriber marketPriceMessageSubscriber;
 
   @Override
   public String getName() {
@@ -86,14 +86,11 @@ public class FloorCommand implements DiscordCommand {
   }
 
   private EmbedCreateSpec getFloorEmbed() {
-    final Optional<Double> ethMktPriceOpt = coinGeckoService.getEthPrice();
-    if (ethMktPriceOpt.isEmpty()) {
-      // This will retry once we have an ethereum price
+    if (marketPriceMessageSubscriber.getLastMarketPlace() == null) {
       return null;
     }
 
-    final var ethMktPrice = ethMktPriceOpt.get();
-
+    final Double ethMktPrice = marketPriceMessageSubscriber.getLastMarketPlace().getEthPrice();
     Double currentPrice = discordBot.getCurrentPrice();
 
     final BigDecimal seedOneMagicFloor = subgraphService.seedFloors.get(SeedType.SEED_1);
